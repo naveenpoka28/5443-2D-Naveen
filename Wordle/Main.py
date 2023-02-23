@@ -4,6 +4,7 @@ import random
 import pygame
 import words
 pygame.init()
+from pygame import mixer
 
 
 # create screen, fonts, colors, game variables
@@ -13,7 +14,17 @@ black = "#000000"
 Green = "#00FF00"
 yellow = "#ffff00"
 gray = "#808080"
-WIDTH, HEIGHT = 500,700
+WIDTH, HEIGHT = 1000,800
+
+
+
+songloser="Wordle\Assets\loser.mp3"
+songwinner="Wordle\Assets\Winner.wav"
+song="Wordle\Assets\Music.mp3"
+mixer.init()
+mixer.music.load(song)
+mixer.music.play()
+
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Wordle 5*6')
@@ -27,7 +38,9 @@ board = [[" ", " ", " ", " ", " "],
 
 fps = 60
 timer = pygame.time.Clock()
-huge_font = pygame.font.Font('Wordle\Arial.ttf', 56)
+huge_font = pygame.font.Font('Wordle\Assets\Arial.ttf', 56)
+normal_text = huge_font.render('Wordle',True,Green)
+screen.blit(normal_text,(40,610))
 secret_word = words.WORDS[random.randint(0, len(words.WORDS) - 1)]
 print(secret_word)
 game_over = False
@@ -58,6 +71,7 @@ def check_words():
                 pygame.draw.rect(screen, Green, [col * 100 + 12, row * 100 + 12, 75, 75], 0, 5)
             elif board[row][col] in secret_word and turn > row:
                 pygame.draw.rect(screen, yellow, [col * 100 + 12, row * 100 + 12, 75, 75], 0, 5)
+
 
 
 # set up your main game loop
@@ -116,11 +130,21 @@ while running:
             game_over = True
             loser_text = huge_font.render('LOSER!', True, black)
             screen.blit(loser_text, (40, 610))
+  
+            mixer.music.stop()          
+            mixer.music.load(songloser)
+            mixer.music.play()
+
             
 
         if game_over and turn < 6:
             winner_text = huge_font.render('WINNER!', True, black)
             screen.blit(winner_text, (40, 610))
+            mixer.music.stop()
+            mixer.music.load(songwinner)
+            mixer.music.play()
+
+            
 
 
     pygame.display.flip()
